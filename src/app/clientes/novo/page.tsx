@@ -45,14 +45,6 @@ export default function NovoClientePage() {
           </div>
         </div>
 
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="cplAlvo">Meta de CPL (R$) — opcional</Label>
-          <Input id="cplAlvo" name="cplAlvo" type="number" step="0.01" min="0" placeholder="Ex: 15" className="h-11" />
-          <p className="font-sans text-xs text-white/35">
-            Usado para o alerta de performance: se o CPL passar disso, aparece um aviso.
-          </p>
-        </div>
-
         <Button
           type="submit"
           size="lg"

@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { slugify } from "@/lib/slug";
+import { parseDateOnly } from "@/lib/format";
 
 function toNumber(value: FormDataEntryValue | null): number {
   const n = Number(value);
@@ -18,15 +19,13 @@ export async function createCliente(formData: FormData) {
   const valorMensal = toNumber(formData.get("valorMensal"));
   const diaVencimentoRaw = formData.get("diaVencimento");
   const diaVencimento = diaVencimentoRaw ? Math.min(31, Math.max(1, Math.round(toNumber(diaVencimentoRaw)))) : null;
-  const cplAlvoRaw = formData.get("cplAlvo");
-  const cplAlvo = cplAlvoRaw && String(cplAlvoRaw).trim() !== "" ? toNumber(cplAlvoRaw) : null;
 
   let slug = slugify(nome);
   const existing = await prisma.cliente.findUnique({ where: { slug } });
   if (existing) slug = `${slug}-${Date.now().toString(36)}`;
 
   const cliente = await prisma.cliente.create({
-    data: { nome, slug, contato, valorMensal, diaVencimento, cplAlvo },
+    data: { nome, slug, contato, valorMensal, diaVencimento },
   });
 
   redirect(`/clientes/${cliente.id}`);
@@ -51,12 +50,15 @@ export async function updateBriefing(clienteId: string, formData: FormData) {
 export async function addPagamento(clienteId: string, formData: FormData) {
   const referencia = String(formData.get("referencia") ?? "").trim();
   const valor = toNumber(formData.get("valor"));
+  const dataVencimentoRaw = String(formData.get("dataVencimento") ?? "").trim();
+  const dataVencimento = dataVencimentoRaw ? parseDateOnly(dataVencimentoRaw) : null;
 
   await prisma.pagamento.create({
-    data: { clienteId, referencia, valor, status: "PENDENTE" },
+    data: { clienteId, referencia, valor, status: "PENDENTE", dataVencimento },
   });
 
   revalidatePath(`/clientes/${clienteId}`);
+  revalidatePath("/agenda");
 }
 
 export async function marcarPagamento(clienteId: string, pagamentoId: string, status: "PAGO" | "PENDENTE" | "ATRASADO") {
@@ -66,30 +68,5 @@ export async function marcarPagamento(clienteId: string, pagamentoId: string, st
   });
 
   revalidatePath(`/clientes/${clienteId}`);
-}
-
-export async function addCriativo(clienteId: string, formData: FormData) {
-  const nome = String(formData.get("nome") ?? "").trim();
-  const resultado = String(formData.get("resultado") ?? "NEUTRO") as "BOM" | "NEUTRO" | "RUIM";
-  const observacoes = String(formData.get("observacoes") ?? "").trim();
-
-  if (!nome) throw new Error("Nome do criativo é obrigatório.");
-
-  await prisma.criativo.create({
-    data: { clienteId, nome, resultado, observacoes },
-  });
-
-  revalidatePath(`/clientes/${clienteId}`);
-}
-
-export async function addChecagem(clienteId: string, formData: FormData) {
-  const investimento = toNumber(formData.get("investimento"));
-  const leads = Math.round(toNumber(formData.get("leads")));
-
-  await prisma.checagem.create({
-    data: { clienteId, investimento, leads },
-  });
-
-  revalidatePath(`/clientes/${clienteId}`);
-  revalidatePath("/");
+  revalidatePath("/agenda");
 }

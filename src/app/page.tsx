@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { AlertTriangle, CheckCircle2, Plus, Users, Wallet, UserPlus } from "lucide-react";
+import { Plus, Users, Wallet, UserPlus } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { cn } from "@/lib/utils";
-import { cpl, formatCurrency, mesReferenciaAtual } from "@/lib/format";
+import { formatCurrency, mesReferenciaAtual } from "@/lib/format";
 import { Reveal } from "@/components/reveal";
 import { AnimatedCounter } from "@/components/animated-counter";
 
@@ -47,7 +47,6 @@ export default async function Home() {
       orderBy: { nome: "asc" },
       include: {
         pagamentos: { where: { referencia: mesAtual } },
-        checagens: { orderBy: { createdAt: "desc" }, take: 1 },
       },
     }),
     prisma.lead.count({ where: { status: { notIn: ["FECHADO", "PERDIDO"] } } }),
@@ -113,10 +112,6 @@ export default async function Home() {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {clientes.map((cliente, i) => {
             const pagamento = cliente.pagamentos[0];
-            const checagem = cliente.checagens[0];
-            const cplAtual = checagem ? cpl(checagem.investimento, checagem.leads) : null;
-            const alertaCpl =
-              cliente.cplAlvo != null && cplAtual != null ? cplAtual > cliente.cplAlvo : null;
             const accent = ACCENTS[i % ACCENTS.length];
 
             return (
@@ -155,18 +150,6 @@ export default async function Home() {
                       {pagamento ? PAGAMENTO_LABEL[pagamento.status] : "Não lançado"}
                     </span>
                   </div>
-
-                  {alertaCpl !== null ? (
-                    <div
-                      className={cn(
-                        "flex items-center gap-2 rounded-xl px-3 py-2 font-sans text-xs",
-                        alertaCpl ? "bg-brand-danger/10 text-brand-danger" : "bg-brand-success/10 text-brand-success"
-                      )}
-                    >
-                      {alertaCpl ? <AlertTriangle className="size-3.5" /> : <CheckCircle2 className="size-3.5" />}
-                      CPL atual: {formatCurrency(cplAtual ?? 0)} (meta: {formatCurrency(cliente.cplAlvo ?? 0)})
-                    </div>
-                  ) : null}
                 </Link>
               </Reveal>
             );

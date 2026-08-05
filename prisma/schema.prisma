@@ -18,12 +18,6 @@ enum StatusPagamento {
   ATRASADO
 }
 
-enum ResultadoCriativo {
-  BOM
-  NEUTRO
-  RUIM
-}
-
 enum StatusLead {
   NOVO
   EM_CONVERSA
@@ -39,14 +33,12 @@ model Cliente {
   contato       String        @default("")
   valorMensal   Float         @default(0)
   diaVencimento Int?
-  cplAlvo       Float?
   status        StatusCliente @default(ATIVO)
   createdAt     DateTime      @default(now())
 
   briefing   Briefing?
   pagamentos Pagamento[]
-  criativos  Criativo[]
-  checagens  Checagem[]
+  reunioes   Reuniao[]
 }
 
 model Briefing {
@@ -62,33 +54,25 @@ model Briefing {
 }
 
 model Pagamento {
-  id            String          @id @default(cuid())
-  clienteId     String
-  cliente       Cliente         @relation(fields: [clienteId], references: [id], onDelete: Cascade)
-  referencia    String
-  valor         Float
-  status        StatusPagamento @default(PENDENTE)
-  dataPagamento DateTime?
-  createdAt     DateTime        @default(now())
+  id             String          @id @default(cuid())
+  clienteId      String
+  cliente        Cliente         @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+  referencia     String
+  valor          Float
+  status         StatusPagamento @default(PENDENTE)
+  dataVencimento DateTime?
+  dataPagamento  DateTime?
+  createdAt      DateTime        @default(now())
 }
 
-model Criativo {
-  id          String            @id @default(cuid())
-  clienteId   String
-  cliente     Cliente           @relation(fields: [clienteId], references: [id], onDelete: Cascade)
-  nome        String
-  resultado   ResultadoCriativo @default(NEUTRO)
-  observacoes String            @default("")
-  createdAt   DateTime          @default(now())
-}
-
-model Checagem {
-  id           String   @id @default(cuid())
-  clienteId    String
-  cliente      Cliente  @relation(fields: [clienteId], references: [id], onDelete: Cascade)
-  investimento Float
-  leads        Int
-  createdAt    DateTime @default(now())
+model Reuniao {
+  id          String   @id @default(cuid())
+  titulo      String
+  data        DateTime
+  clienteId   String?
+  cliente     Cliente? @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+  observacoes String   @default("")
+  createdAt   DateTime @default(now())
 }
 
 model Lead {

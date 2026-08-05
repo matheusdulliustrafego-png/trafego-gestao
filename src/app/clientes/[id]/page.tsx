@@ -1,10 +1,10 @@
 import { notFound } from "next/navigation";
 import type { LucideIcon } from "lucide-react";
-import { FileText, Wallet } from "lucide-react";
+import { Contact, FileText, Wallet } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { cn } from "@/lib/utils";
 import { formatCurrency, formatMesReferencia, mesReferenciaAtual } from "@/lib/format";
-import { addPagamento, marcarPagamento, updateBriefing } from "@/actions/clientes";
+import { addPagamento, marcarPagamento, updateBriefing, updateDadosCliente } from "@/actions/clientes";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -80,6 +80,7 @@ export default async function ClienteDetailPage({
   if (!cliente) notFound();
 
   const updateBriefingWithId = updateBriefing.bind(null, cliente.id);
+  const updateDadosClienteWithId = updateDadosCliente.bind(null, cliente.id);
   const addPagamentoWithId = addPagamento.bind(null, cliente.id);
 
   return (
@@ -88,12 +89,58 @@ export default async function ClienteDetailPage({
         <div>
           <p className="font-sans text-xs text-white/40">Cliente</p>
           <h1 className="font-heading text-2xl font-semibold text-gradient-vivid">{cliente.nome}</h1>
-          <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 font-sans text-sm text-white/50">
-            {cliente.contato ? <span>{cliente.contato}</span> : null}
-            <span>Mensalidade: {formatCurrency(cliente.valorMensal)}</span>
-            {cliente.diaVencimento ? <span>Vence dia {cliente.diaVencimento}</span> : null}
-          </div>
         </div>
+      </Reveal>
+
+      {/* Dados do cliente */}
+      <Reveal delay={0.05}>
+        <Section title="Dados do cliente" description="Contato e informações de cobrança." icon={Contact} accent="from-brand-orange to-brand-pink">
+          <form action={updateDadosClienteWithId} className="flex flex-col gap-4">
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="dadosNome">Nome</Label>
+              <Input id="dadosNome" name="nome" defaultValue={cliente.nome} required className="h-11" />
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="contato">Contato (WhatsApp)</Label>
+                <Input id="contato" name="contato" defaultValue={cliente.contato} className="h-11" />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="email">E-mail</Label>
+                <Input id="email" name="email" type="email" defaultValue={cliente.email} placeholder="cliente@email.com" className="h-11" />
+                <p className="font-sans text-xs text-white/35">Usado para enviar lembrete de reunião por e-mail.</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="valorMensal">Mensalidade (R$)</Label>
+                <Input
+                  id="valorMensal"
+                  name="valorMensal"
+                  type="number"
+                  step="0.01"
+                  defaultValue={cliente.valorMensal}
+                  className="h-11"
+                />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="diaVencimento">Dia de vencimento</Label>
+                <Input
+                  id="diaVencimento"
+                  name="diaVencimento"
+                  type="number"
+                  min="1"
+                  max="31"
+                  defaultValue={cliente.diaVencimento ?? ""}
+                  className="h-11"
+                />
+              </div>
+            </div>
+            <Button type="submit" variant="secondary" className="self-start rounded-full">
+              Salvar dados
+            </Button>
+          </form>
+        </Section>
       </Reveal>
 
       {/* Briefing */}

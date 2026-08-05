@@ -29,9 +29,15 @@ export default function NovoClientePage() {
           <Input id="nome" name="nome" required className="h-11" placeholder="Ex: Studio Bella" />
         </div>
 
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="contato">Contato (WhatsApp)</Label>
-          <Input id="contato" name="contato" className="h-11" placeholder="Ex: 51999999999" />
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="contato">Contato (WhatsApp)</Label>
+            <Input id="contato" name="contato" className="h-11" placeholder="Ex: 51999999999" />
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="email">E-mail</Label>
+            <Input id="email" name="email" type="email" className="h-11" placeholder="cliente@email.com" />
+          </div>
         </div>
 
         <div className="grid grid-cols-2 gap-4">

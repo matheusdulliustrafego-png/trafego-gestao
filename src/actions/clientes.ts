@@ -16,6 +16,7 @@ export async function createCliente(formData: FormData) {
   if (!nome) throw new Error("Nome é obrigatório.");
 
   const contato = String(formData.get("contato") ?? "").trim();
+  const email = String(formData.get("email") ?? "").trim();
   const valorMensal = toNumber(formData.get("valorMensal"));
   const diaVencimentoRaw = formData.get("diaVencimento");
   const diaVencimento = diaVencimentoRaw ? Math.min(31, Math.max(1, Math.round(toNumber(diaVencimentoRaw)))) : null;
@@ -25,10 +26,29 @@ export async function createCliente(formData: FormData) {
   if (existing) slug = `${slug}-${Date.now().toString(36)}`;
 
   const cliente = await prisma.cliente.create({
-    data: { nome, slug, contato, valorMensal, diaVencimento },
+    data: { nome, slug, contato, email, valorMensal, diaVencimento },
   });
 
   redirect(`/clientes/${cliente.id}`);
+}
+
+export async function updateDadosCliente(clienteId: string, formData: FormData) {
+  const nome = String(formData.get("nome") ?? "").trim();
+  if (!nome) throw new Error("Nome é obrigatório.");
+
+  const contato = String(formData.get("contato") ?? "").trim();
+  const email = String(formData.get("email") ?? "").trim();
+  const valorMensal = toNumber(formData.get("valorMensal"));
+  const diaVencimentoRaw = formData.get("diaVencimento");
+  const diaVencimento = diaVencimentoRaw ? Math.min(31, Math.max(1, Math.round(toNumber(diaVencimentoRaw)))) : null;
+
+  await prisma.cliente.update({
+    where: { id: clienteId },
+    data: { nome, contato, email, valorMensal, diaVencimento },
+  });
+
+  revalidatePath(`/clientes/${clienteId}`);
+  revalidatePath("/");
 }
 
 export async function updateBriefing(clienteId: string, formData: FormData) {

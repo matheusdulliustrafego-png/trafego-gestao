@@ -31,6 +31,7 @@ model Cliente {
   nome          String
   slug          String        @unique
   contato       String        @default("")
+  email         String        @default("")
   valorMensal   Float         @default(0)
   diaVencimento Int?
   status        StatusCliente @default(ATIVO)
@@ -66,13 +67,14 @@ model Pagamento {
 }
 
 model Reuniao {
-  id          String   @id @default(cuid())
-  titulo      String
-  data        DateTime
-  clienteId   String?
-  cliente     Cliente? @relation(fields: [clienteId], references: [id], onDelete: Cascade)
-  observacoes String   @default("")
-  createdAt   DateTime @default(now())
+  id              String   @id @default(cuid())
+  titulo          String
+  data            DateTime
+  clienteId       String?
+  cliente         Cliente? @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+  observacoes     String   @default("")
+  lembreteEnviado Boolean  @default(false)
+  createdAt       DateTime @default(now())
 }
 
 model Lead {

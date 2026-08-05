@@ -1,10 +1,13 @@
 import Link from "next/link";
-import { Plus, Users, Wallet, UserPlus } from "lucide-react";
+import { Plus, Users, Wallet, UserPlus, Target } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { cn } from "@/lib/utils";
 import { formatCurrency, mesReferenciaAtual } from "@/lib/format";
+import { updateMeta } from "@/actions/meta";
 import { Reveal } from "@/components/reveal";
 import { AnimatedCounter } from "@/components/animated-counter";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 export const dynamic = "force-dynamic";
 
@@ -42,7 +45,7 @@ const ACCENTS = [
 export default async function Home() {
   const mesAtual = mesReferenciaAtual();
 
-  const [clientes, leadsEmAberto] = await Promise.all([
+  const [clientes, leadsEmAberto, meta] = await Promise.all([
     prisma.cliente.findMany({
       orderBy: { nome: "asc" },
       include: {
@@ -50,10 +53,13 @@ export default async function Home() {
       },
     }),
     prisma.lead.count({ where: { status: { notIn: ["FECHADO", "PERDIDO"] } } }),
+    prisma.meta.findFirst(),
   ]);
 
   const clientesAtivos = clientes.filter((c) => c.status === "ATIVO").length;
   const mrr = clientes.filter((c) => c.status === "ATIVO").reduce((sum, c) => sum + c.valorMensal, 0);
+  const metaValor = meta?.valor ?? 0;
+  const percentual = metaValor > 0 ? (mrr / metaValor) * 100 : 0;
 
   const stats = [
     { label: "Clientes ativos", value: clientesAtivos, icon: Users, accent: "from-brand-blue to-brand-cyan" },
@@ -105,6 +111,48 @@ export default async function Home() {
           </Reveal>
         ))}
       </div>
+
+      <Reveal delay={0.2}>
+        <div className="rounded-2xl border border-white/[0.08] bg-gradient-to-b from-white/[0.04] to-transparent p-6">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-brand-cyan to-brand-purple text-white shadow-md">
+                <Target className="size-4.5" strokeWidth={2} />
+              </span>
+              <div>
+                <h2 className="font-heading text-lg font-semibold text-white">Meta de faturamento</h2>
+                <p className="font-sans text-sm text-white/50">
+                  {formatCurrency(mrr)} de {formatCurrency(metaValor)}
+                  {metaValor > 0 ? ` — ${percentual.toFixed(0)}%` : ""}
+                </p>
+              </div>
+            </div>
+            <form action={updateMeta} key={meta?.updatedAt.getTime() ?? "novo"} className="flex items-center gap-2">
+              <Input
+                name="valor"
+                type="number"
+                step="0.01"
+                min="0"
+                defaultValue={metaValor || ""}
+                placeholder="Ex: 5000"
+                className="h-9 w-32"
+              />
+              <Button type="submit" size="sm" variant="secondary" className="rounded-full">
+                Salvar meta
+              </Button>
+            </form>
+          </div>
+
+          {metaValor > 0 ? (
+            <div className="mt-4 h-2.5 w-full overflow-hidden rounded-full bg-white/[0.06]">
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-brand-cyan via-brand-blue to-brand-purple transition-all duration-700"
+                style={{ width: `${Math.min(100, percentual)}%` }}
+              />
+            </div>
+          ) : null}
+        </div>
+      </Reveal>
 
       {clientes.length === 0 ? (
         <p className="font-sans text-sm text-white/40">Nenhum cliente cadastrado ainda.</p>

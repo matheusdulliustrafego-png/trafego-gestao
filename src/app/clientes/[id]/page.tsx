@@ -1,15 +1,17 @@
 import { notFound } from "next/navigation";
 import type { LucideIcon } from "lucide-react";
-import { Contact, FileText, Wallet } from "lucide-react";
+import { Contact, FileText, Wallet, KeyRound, Trash2 } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { cn } from "@/lib/utils";
 import { formatCurrency, formatMesReferencia, mesReferenciaAtual } from "@/lib/format";
 import { addPagamento, marcarPagamento, updateBriefing, updateDadosCliente } from "@/actions/clientes";
+import { addAcesso, deleteAcesso } from "@/actions/acessos";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/reveal";
+import { SenhaReveal } from "@/components/senha-reveal";
 
 export const dynamic = "force-dynamic";
 
@@ -74,6 +76,7 @@ export default async function ClienteDetailPage({
     include: {
       briefing: true,
       pagamentos: { orderBy: { createdAt: "desc" } },
+      acessos: { orderBy: { createdAt: "desc" } },
     },
   });
 
@@ -82,6 +85,7 @@ export default async function ClienteDetailPage({
   const updateBriefingWithId = updateBriefing.bind(null, cliente.id);
   const updateDadosClienteWithId = updateDadosCliente.bind(null, cliente.id);
   const addPagamentoWithId = addPagamento.bind(null, cliente.id);
+  const addAcessoWithId = addAcesso.bind(null, cliente.id);
 
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-6 py-12">
@@ -265,6 +269,68 @@ export default async function ClienteDetailPage({
           <p className="mt-2 font-sans text-xs text-white/35">
             A data de vencimento aparece automaticamente na Agenda.
           </p>
+        </Section>
+      </Reveal>
+
+      {/* Acessos */}
+      <Reveal delay={0.2}>
+        <Section
+          title="Acessos"
+          description="Login e senha da conta de anúncio, Business Manager, etc."
+          icon={KeyRound}
+          accent="from-brand-purple to-brand-blue"
+        >
+          <div className="flex flex-col gap-3">
+            {cliente.acessos.length === 0 ? (
+              <p className="font-sans text-sm text-white/40">Nenhum acesso registrado.</p>
+            ) : (
+              cliente.acessos.map((a) => (
+                <div
+                  key={a.id}
+                  className="flex items-center justify-between gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3"
+                >
+                  <div className="flex flex-col gap-0.5">
+                    <p className="font-sans text-sm font-medium text-white">{a.plataforma}</p>
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 font-sans text-xs text-white/45">
+                      {a.login ? <span>{a.login}</span> : null}
+                      <SenhaReveal senha={a.senha} />
+                    </div>
+                    {a.observacoes ? <p className="font-sans text-xs text-white/35">{a.observacoes}</p> : null}
+                  </div>
+                  <form action={deleteAcesso.bind(null, cliente.id, a.id)}>
+                    <button
+                      type="submit"
+                      aria-label="Remover acesso"
+                      className="flex size-8 shrink-0 items-center justify-center rounded-full text-white/30 transition-colors hover:bg-white/10 hover:text-brand-danger"
+                    >
+                      <Trash2 className="size-4" />
+                    </button>
+                  </form>
+                </div>
+              ))
+            )}
+          </div>
+
+          <form action={addAcessoWithId} className="mt-5 flex flex-col gap-3 border-t border-white/[0.06] pt-5">
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="plataforma">Plataforma *</Label>
+                <Input id="plataforma" name="plataforma" required className="h-10" placeholder="Ex: Business Manager" />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="login">Login / e-mail</Label>
+                <Input id="login" name="login" className="h-10" />
+              </div>
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="senha">Senha</Label>
+              <Input id="senha" name="senha" className="h-10" />
+            </div>
+            <Textarea name="observacoes" rows={2} placeholder="Observações (opcional)" />
+            <Button type="submit" variant="secondary" className="self-start h-10 rounded-full">
+              Salvar acesso
+            </Button>
+          </form>
         </Section>
       </Reveal>
     </main>

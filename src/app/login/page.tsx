@@ -12,14 +12,12 @@ export default async function LoginPage({
 
   return (
     <main className="flex min-h-screen items-center justify-center px-6">
-      <div className="w-full max-w-sm rounded-2xl border border-white/[0.08] bg-gradient-to-b from-white/[0.04] to-transparent p-8">
+      <div className="glow-card w-full max-w-sm rounded-2xl border border-white/[0.08] bg-gradient-to-b from-white/[0.06] to-transparent p-8 backdrop-blur-xl">
         <div className="flex flex-col items-center gap-3 text-center">
-          <span className="flex size-11 items-center justify-center rounded-lg border border-brand-silver/25 bg-gradient-to-br from-brand-charcoal to-brand-black">
-            <span className="font-heading text-sm font-semibold tracking-tight text-gradient-silver">
-              TR
-            </span>
+          <span className="flex size-12 items-center justify-center rounded-xl bg-gradient-to-br from-brand-blue via-brand-purple to-brand-pink shadow-[0_0_24px_-4px_rgba(168,85,247,0.7)]">
+            <span className="font-heading text-sm font-semibold tracking-tight text-white">TR</span>
           </span>
-          <h1 className="font-heading text-xl font-semibold text-white">Área restrita</h1>
+          <h1 className="font-heading text-xl font-semibold text-gradient-vivid">Área restrita</h1>
           <p className="font-sans text-sm text-white/50">
             Gestão de clientes — digite a senha para continuar.
           </p>
@@ -34,7 +32,11 @@ export default async function LoginPage({
           {erro ? (
             <p className="font-sans text-sm text-destructive">Senha incorreta. Tente novamente.</p>
           ) : null}
-          <Button type="submit" size="lg" className="mt-2 h-12 rounded-full text-base">
+          <Button
+            type="submit"
+            size="lg"
+            className="mt-2 h-12 rounded-full bg-gradient-to-r from-brand-blue via-brand-purple to-brand-pink text-base text-white shadow-[0_0_24px_-6px_rgba(168,85,247,0.7)] hover:opacity-90"
+          >
             Entrar
           </Button>
         </form>

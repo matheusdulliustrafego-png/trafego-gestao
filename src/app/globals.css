@@ -17,6 +17,13 @@
   --color-warning: #eab308;
   --color-danger: #ef4444;
 
+  /* Acentos vivos — só nesta ferramenta interna */
+  --color-blue: #3b82f6;
+  --color-purple: #a855f7;
+  --color-pink: #ec4899;
+  --color-orange: #f97316;
+  --color-cyan: #22d3ee;
+
   --background: var(--color-black);
   --foreground: var(--color-white);
 
@@ -53,6 +60,11 @@
   --color-brand-success: var(--color-success);
   --color-brand-warning: var(--color-warning);
   --color-brand-danger: var(--color-danger);
+  --color-brand-blue: var(--color-blue);
+  --color-brand-purple: var(--color-purple);
+  --color-brand-pink: var(--color-pink);
+  --color-brand-orange: var(--color-orange);
+  --color-brand-cyan: var(--color-cyan);
 
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
@@ -82,6 +94,11 @@
   --radius-2xl: calc(var(--radius) + 0.75rem);
 
   --animate-fade-in: fade-in 0.6s ease-out both;
+  --animate-fade-in-up: fade-in-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-blob: blob-drift 18s ease-in-out infinite;
+  --animate-blob-slow: blob-drift 26s ease-in-out infinite;
+  --animate-glow-pulse: glow-pulse 3s ease-in-out infinite;
+  --animate-shimmer: shimmer 2.5s linear infinite;
 }
 
 @keyframes fade-in {
@@ -90,6 +107,49 @@
   }
   to {
     opacity: 1;
+  }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes blob-drift {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(4%, -6%) scale(1.08);
+  }
+  66% {
+    transform: translate(-3%, 4%) scale(0.95);
+  }
+}
+
+@keyframes glow-pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes shimmer {
+  from {
+    background-position: -200% 0;
+  }
+  to {
+    background-position: 200% 0;
   }
 }
 
@@ -130,4 +190,45 @@ body {
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+}
+
+.text-gradient-vivid {
+  background: linear-gradient(115deg, var(--color-blue) 0%, var(--color-purple) 45%, var(--color-pink) 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shimmer 6s linear infinite;
+}
+
+.glow-card {
+  position: relative;
+  isolation: isolate;
+}
+
+.glow-card::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: var(--glow-gradient, linear-gradient(135deg, var(--color-blue), var(--color-purple)));
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.glow-card:hover::before {
+  opacity: 1;
+}
+
+.bg-blob {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(90px);
+  pointer-events: none;
 }

@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Poppins, Raleway, Inter } from "next/font/google";
 import "./globals.css";
 import { Nav } from "@/components/nav";
+import { AnimatedBackground } from "@/components/animated-background";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -48,6 +49,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col bg-brand-black text-white antialiased">
+        <AnimatedBackground />
         <Nav />
         <div className="flex-1">{children}</div>
       </body>

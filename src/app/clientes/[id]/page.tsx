@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
-import { AlertTriangle, CheckCircle2 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import { AlertTriangle, CheckCircle2, FileText, Wallet, Sparkles, Activity } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { cn } from "@/lib/utils";
 import { cpl, formatCurrency, formatDate, formatMesReferencia, mesReferenciaAtual } from "@/lib/format";
@@ -14,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { Reveal } from "@/components/reveal";
 
 export const dynamic = "force-dynamic";
 
@@ -41,11 +43,30 @@ const PAGAMENTO_LABEL: Record<string, string> = {
   ATRASADO: "Atrasado",
 };
 
-function Section({ title, description, children }: { title: string; description?: string; children: React.ReactNode }) {
+function Section({
+  title,
+  description,
+  icon: Icon,
+  accent,
+  children,
+}: {
+  title: string;
+  description?: string;
+  icon: LucideIcon;
+  accent: string;
+  children: React.ReactNode;
+}) {
   return (
     <section className="rounded-2xl border border-white/[0.08] bg-gradient-to-b from-white/[0.04] to-transparent p-6">
-      <h2 className="font-heading text-lg font-semibold text-white">{title}</h2>
-      {description ? <p className="mt-1 font-sans text-sm text-white/50">{description}</p> : null}
+      <div className="flex items-center gap-3">
+        <span className={cn("flex size-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br text-white shadow-md", accent)}>
+          <Icon className="size-4.5" strokeWidth={2} />
+        </span>
+        <div>
+          <h2 className="font-heading text-lg font-semibold text-white">{title}</h2>
+          {description ? <p className="font-sans text-sm text-white/50">{description}</p> : null}
+        </div>
+      </div>
       <div className="mt-5">{children}</div>
     </section>
   );
@@ -81,30 +102,35 @@ export default async function ClienteDetailPage({
 
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-6 py-12">
-      <div>
-        <p className="font-sans text-xs text-white/40">Cliente</p>
-        <h1 className="font-heading text-2xl font-semibold text-white">{cliente.nome}</h1>
-        <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 font-sans text-sm text-white/50">
-          {cliente.contato ? <span>{cliente.contato}</span> : null}
-          <span>Mensalidade: {formatCurrency(cliente.valorMensal)}</span>
-          {cliente.diaVencimento ? <span>Vence dia {cliente.diaVencimento}</span> : null}
+      <Reveal>
+        <div>
+          <p className="font-sans text-xs text-white/40">Cliente</p>
+          <h1 className="font-heading text-2xl font-semibold text-gradient-vivid">{cliente.nome}</h1>
+          <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 font-sans text-sm text-white/50">
+            {cliente.contato ? <span>{cliente.contato}</span> : null}
+            <span>Mensalidade: {formatCurrency(cliente.valorMensal)}</span>
+            {cliente.diaVencimento ? <span>Vence dia {cliente.diaVencimento}</span> : null}
+          </div>
         </div>
-      </div>
+      </Reveal>
 
       {alertaCpl !== null ? (
-        <div
-          className={cn(
-            "flex items-center gap-2 rounded-xl px-4 py-3 font-sans text-sm",
-            alertaCpl ? "bg-brand-danger/10 text-brand-danger" : "bg-brand-success/10 text-brand-success"
-          )}
-        >
-          {alertaCpl ? <AlertTriangle className="size-4" /> : <CheckCircle2 className="size-4" />}
-          CPL atual: {formatCurrency(cplAtual ?? 0)} — meta: {formatCurrency(cliente.cplAlvo ?? 0)}
-        </div>
+        <Reveal delay={0.05}>
+          <div
+            className={cn(
+              "flex items-center gap-2 rounded-xl px-4 py-3 font-sans text-sm",
+              alertaCpl ? "bg-brand-danger/10 text-brand-danger" : "bg-brand-success/10 text-brand-success"
+            )}
+          >
+            {alertaCpl ? <AlertTriangle className="size-4" /> : <CheckCircle2 className="size-4" />}
+            CPL atual: {formatCurrency(cplAtual ?? 0)} — meta: {formatCurrency(cliente.cplAlvo ?? 0)}
+          </div>
+        </Reveal>
       ) : null}
 
       {/* Briefing */}
-      <Section title="Briefing" description="Nicho, público e oferta do cliente.">
+      <Reveal delay={0.1}>
+      <Section title="Briefing" description="Nicho, público e oferta do cliente." icon={FileText} accent="from-brand-blue to-brand-cyan">
         <form
           key={cliente.briefing?.updatedAt.getTime() ?? "novo"}
           action={updateBriefingWithId}
@@ -144,9 +170,11 @@ export default async function ClienteDetailPage({
           </Button>
         </form>
       </Section>
+      </Reveal>
 
       {/* Financeiro */}
-      <Section title="Financeiro" description="Controle de mensalidades.">
+      <Reveal delay={0.15}>
+      <Section title="Financeiro" description="Controle de mensalidades." icon={Wallet} accent="from-brand-success to-brand-cyan">
         <div className="flex flex-col gap-3">
           {cliente.pagamentos.length === 0 ? (
             <p className="font-sans text-sm text-white/40">Nenhum pagamento lançado.</p>
@@ -210,9 +238,11 @@ export default async function ClienteDetailPage({
           </Button>
         </form>
       </Section>
+      </Reveal>
 
       {/* Criativos */}
-      <Section title="Criativos testados" description="Histórico do que já foi testado nas campanhas.">
+      <Reveal delay={0.2}>
+      <Section title="Criativos testados" description="Histórico do que já foi testado nas campanhas." icon={Sparkles} accent="from-brand-purple to-brand-pink">
         <div className="flex flex-col gap-3">
           {cliente.criativos.length === 0 ? (
             <p className="font-sans text-sm text-white/40">Nenhum criativo registrado.</p>
@@ -258,9 +288,11 @@ export default async function ClienteDetailPage({
           </Button>
         </form>
       </Section>
+      </Reveal>
 
       {/* Checagens / Alertas */}
-      <Section title="Checagens de performance" description="Registre o CPL para acompanhar contra a meta.">
+      <Reveal delay={0.25}>
+      <Section title="Checagens de performance" description="Registre o CPL para acompanhar contra a meta." icon={Activity} accent="from-brand-orange to-brand-danger">
         <div className="flex flex-col gap-3">
           {cliente.checagens.length === 0 ? (
             <p className="font-sans text-sm text-white/40">Nenhuma checagem registrada.</p>
@@ -311,6 +343,7 @@ export default async function ClienteDetailPage({
           </Button>
         </form>
       </Section>
+      </Reveal>
     </main>
   );
 }

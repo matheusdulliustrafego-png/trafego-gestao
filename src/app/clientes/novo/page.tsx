@@ -1,18 +1,28 @@
+import { UserPlus } from "lucide-react";
 import { createCliente } from "@/actions/clientes";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { Reveal } from "@/components/reveal";
 
 export default function NovoClientePage() {
   return (
     <main className="mx-auto flex w-full max-w-lg flex-col gap-8 px-6 py-12">
-      <div>
-        <h1 className="font-heading text-2xl font-semibold text-white">Novo cliente</h1>
-        <p className="mt-2 font-sans text-sm text-white/50">
-          Cadastro básico — você pode preencher o briefing e o resto depois.
-        </p>
-      </div>
+      <Reveal>
+        <div className="flex items-center gap-3">
+          <span className="flex size-10 items-center justify-center rounded-xl bg-gradient-to-br from-brand-blue via-brand-purple to-brand-pink text-white shadow-lg">
+            <UserPlus className="size-5" strokeWidth={2} />
+          </span>
+          <div>
+            <h1 className="font-heading text-2xl font-semibold text-white">Novo cliente</h1>
+            <p className="font-sans text-sm text-white/50">
+              Cadastro básico — você pode preencher o briefing e o resto depois.
+            </p>
+          </div>
+        </div>
+      </Reveal>
 
+      <Reveal delay={0.08}>
       <form action={createCliente} className="flex flex-col gap-4">
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="nome">Nome do cliente *</Label>
@@ -43,10 +53,15 @@ export default function NovoClientePage() {
           </p>
         </div>
 
-        <Button type="submit" size="lg" className="mt-2 h-12 rounded-full text-base">
+        <Button
+          type="submit"
+          size="lg"
+          className="mt-2 h-12 rounded-full bg-gradient-to-r from-brand-blue via-brand-purple to-brand-pink text-base text-white shadow-[0_0_20px_-4px_rgba(168,85,247,0.6)] hover:opacity-90"
+        >
           Criar cliente
         </Button>
       </form>
+      </Reveal>
     </main>
   );
 }

@@ -1,8 +1,10 @@
+import { cookies } from "next/headers";
 import { UserPlus } from "lucide-react";
 import { createLead, updateLeadStatus } from "@/actions/leads";
 import { prisma } from "@/lib/prisma";
 import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/format";
+import { AUTH_COOKIE, isValidSessionToken } from "@/lib/auth";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -36,7 +38,10 @@ const ACCENT_BAR: Record<string, string> = {
 };
 
 export default async function LeadsPage() {
-  const leads = await prisma.lead.findMany({ orderBy: { createdAt: "desc" } });
+  const cookieStore = await cookies();
+  const autenticado = await isValidSessionToken(cookieStore.get(AUTH_COOKIE)?.value);
+
+  const leads = autenticado ? await prisma.lead.findMany({ orderBy: { createdAt: "desc" } }) : [];
 
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-col gap-8 px-6 py-12">

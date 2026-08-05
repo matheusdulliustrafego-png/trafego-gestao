@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { AUTH_COOKIE, isValidSessionToken } from "@/lib/auth";
 
 export const config = {
-  matcher: ["/((?!login|api|_next|favicon.ico|robots.txt).*)"],
+  matcher: ["/((?!login|leads|api|_next|favicon.ico|robots.txt).*)"],
 };
 
 export async function proxy(req: NextRequest) {

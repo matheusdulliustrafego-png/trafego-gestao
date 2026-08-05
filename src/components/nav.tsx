@@ -13,7 +13,7 @@ const LINKS = [
 export function Nav() {
   const pathname = usePathname();
 
-  if (pathname === "/login") return null;
+  if (pathname === "/login" || pathname === "/leads") return null;
 
   return (
     <header className="border-b border-white/[0.06] bg-brand-black/80 backdrop-blur-xl">

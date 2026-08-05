@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { LEAD_ENVIADO_COOKIE } from "@/lib/auth";
+import { enviarNotificacaoNovoLead } from "@/lib/email";
 
 export async function createLead(formData: FormData) {
   const nome = String(formData.get("nome") ?? "").trim();
@@ -37,6 +38,14 @@ export async function createLead(formData: FormData) {
   await prisma.lead.create({
     data: { nome, contato, origem, observacoes },
   });
+
+  if (publico) {
+    try {
+      await enviarNotificacaoNovoLead({ nome, contato, origem, observacoes });
+    } catch (err) {
+      console.error("Falha ao enviar notificação de novo lead:", err);
+    }
+  }
 
   if (publico) {
     const cookieStore = await cookies();

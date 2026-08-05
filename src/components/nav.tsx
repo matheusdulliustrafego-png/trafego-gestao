@@ -10,10 +10,11 @@ const LINKS = [
   { href: "/leads", label: "Leads" },
 ];
 
-export function Nav() {
+export function Nav({ authenticated }: { authenticated: boolean }) {
   const pathname = usePathname();
 
-  if (pathname === "/login" || pathname === "/leads") return null;
+  if (pathname === "/login") return null;
+  if (pathname === "/leads" && !authenticated) return null;
 
   return (
     <header className="border-b border-white/[0.06] bg-brand-black/80 backdrop-blur-xl">

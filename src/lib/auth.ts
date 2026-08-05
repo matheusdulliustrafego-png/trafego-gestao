@@ -1,4 +1,5 @@
 export const AUTH_COOKIE = "trafego_gestao_auth";
+export const LEAD_ENVIADO_COOKIE = "lead_enviado";
 const SESSION_VALUE = "authenticated";
 
 function toHex(buffer: ArrayBuffer): string {

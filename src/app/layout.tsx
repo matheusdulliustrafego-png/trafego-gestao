@@ -44,6 +44,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="pt-BR"
       className={`${poppins.variable} ${raleway.variable} ${inter.variable} h-full dark`}
+      data-scroll-behavior="smooth"
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col bg-brand-black text-white antialiased">

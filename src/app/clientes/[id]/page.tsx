@@ -105,7 +105,11 @@ export default async function ClienteDetailPage({
 
       {/* Briefing */}
       <Section title="Briefing" description="Nicho, público e oferta do cliente.">
-        <form action={updateBriefingWithId} className="flex flex-col gap-4">
+        <form
+          key={cliente.briefing?.updatedAt.getTime() ?? "novo"}
+          action={updateBriefingWithId}
+          className="flex flex-col gap-4"
+        >
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="nicho">Nicho</Label>

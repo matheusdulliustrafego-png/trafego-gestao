@@ -6,6 +6,7 @@ import { formatDate } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { Reveal } from "@/components/reveal";
 import { LeadStatusSelect } from "./lead-status-select";
+import { LeadDeleteButton } from "./lead-delete-button";
 
 type Lead = {
   id: string;
@@ -53,8 +54,9 @@ export function LeadsList({ leads }: { leads: Lead[] }) {
                 ) : null}
                 <p className="mt-1 font-sans text-[11px] text-white/25">{formatDate(lead.createdAt)}</p>
               </div>
-              <div className="pl-2 sm:pl-0">
+              <div className="flex items-center gap-2 pl-2 sm:pl-0">
                 <LeadStatusSelect leadId={lead.id} status={lead.status} />
+                <LeadDeleteButton leadId={lead.id} />
               </div>
             </div>
           </Reveal>

@@ -59,6 +59,11 @@ export async function createLead(formData: FormData) {
   revalidatePath("/leads");
 }
 
+export async function deleteLead(leadId: string) {
+  await prisma.lead.delete({ where: { id: leadId } });
+  revalidatePath("/leads");
+}
+
 export async function updateLeadStatus(leadId: string, formData: FormData) {
   const status = String(formData.get("status") ?? "NOVO") as
     | "NOVO"

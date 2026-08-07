@@ -9,7 +9,8 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/reveal";
 import { CapturaPublica } from "@/components/leads/captura-publica";
-import { LeadsKanban } from "@/components/leads/kanban";
+import { LeadsOverview } from "@/components/leads/leads-overview";
+import { LeadsList } from "@/components/leads/leads-list";
 
 export const dynamic = "force-dynamic";
 
@@ -41,6 +42,10 @@ export default async function LeadsPage() {
       </Reveal>
 
       <Reveal delay={0.05}>
+        <LeadsOverview leads={leads} />
+      </Reveal>
+
+      <Reveal delay={0.08}>
         <section className="rounded-2xl border border-white/[0.08] bg-gradient-to-b from-white/[0.04] to-transparent p-6">
           <h2 className="font-heading text-base font-semibold text-white">Novo lead</h2>
           <form action={createLead} className="mt-4 flex flex-col gap-4">
@@ -73,11 +78,11 @@ export default async function LeadsPage() {
         </section>
       </Reveal>
 
-      <Reveal delay={0.1}>
+      <Reveal delay={0.12}>
         {leads.length === 0 ? (
           <p className="font-sans text-sm text-white/40">Nenhum lead ainda.</p>
         ) : (
-          <LeadsKanban leads={leads} />
+          <LeadsList leads={leads} />
         )}
       </Reveal>
     </main>

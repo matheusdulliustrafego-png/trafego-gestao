@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/reveal";
 import { SenhaReveal } from "@/components/senha-reveal";
+import { ListField } from "@/components/list-field";
 
 export const dynamic = "force-dynamic";
 
@@ -149,7 +150,7 @@ export default async function ClienteDetailPage({
 
       {/* Briefing */}
       <Reveal delay={0.1}>
-        <Section title="Briefing" description="Nicho, público e oferta do cliente." icon={FileText} accent="from-brand-blue to-brand-cyan">
+        <Section title="Briefing" description="Estratégia, público e diferenciais do cliente." icon={FileText} accent="from-brand-blue to-brand-cyan">
           <form
             key={cliente.briefing?.updatedAt.getTime() ?? "novo"}
             action={updateBriefingWithId}
@@ -161,6 +162,19 @@ export default async function ClienteDetailPage({
                 <Input id="nicho" name="nicho" defaultValue={cliente.briefing?.nicho ?? ""} className="h-11" />
               </div>
               <div className="flex flex-col gap-1.5">
+                <Label htmlFor="objetivoPrincipal">Objetivo principal</Label>
+                <Input
+                  id="objetivoPrincipal"
+                  name="objetivoPrincipal"
+                  placeholder="Ex: Leads, Vendas, WhatsApp"
+                  defaultValue={cliente.briefing?.objetivoPrincipal ?? ""}
+                  className="h-11"
+                />
+              </div>
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="flex flex-col gap-1.5">
                 <Label htmlFor="orcamentoMensal">Orçamento de anúncios (R$)</Label>
                 <Input
                   id="orcamentoMensal"
@@ -171,15 +185,59 @@ export default async function ClienteDetailPage({
                   className="h-11"
                 />
               </div>
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="ticketMedio">Ticket médio (R$)</Label>
+                <Input
+                  id="ticketMedio"
+                  name="ticketMedio"
+                  type="number"
+                  step="0.01"
+                  defaultValue={cliente.briefing?.ticketMedio ?? 0}
+                  className="h-11"
+                />
+              </div>
             </div>
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="publicoAlvo">Público-alvo</Label>
-              <Input id="publicoAlvo" name="publicoAlvo" defaultValue={cliente.briefing?.publicoAlvo ?? ""} className="h-11" />
-            </div>
+
+            <ListField
+              name="publicoAlvo"
+              label="Público-alvo"
+              placeholder="Ex: Mulheres 25-40 anos, região metropolitana..."
+              initialItems={cliente.briefing?.publicoAlvo ?? []}
+            />
+
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="oferta">Oferta</Label>
               <Input id="oferta" name="oferta" defaultValue={cliente.briefing?.oferta ?? ""} className="h-11" />
             </div>
+
+            <ListField
+              name="diferenciais"
+              label="Diferenciais competitivos"
+              placeholder="Ex: Entrega em 24h, garantia vitalícia..."
+              initialItems={cliente.briefing?.diferenciais ?? []}
+            />
+
+            <ListField
+              name="concorrentes"
+              label="Principais concorrentes"
+              placeholder="Nome do concorrente ou @perfil"
+              initialItems={cliente.briefing?.concorrentes ?? []}
+            />
+
+            <ListField
+              name="objecoes"
+              label="Objeções comuns dos clientes"
+              placeholder="Ex: Acha caro, não confia na entrega..."
+              initialItems={cliente.briefing?.objecoes ?? []}
+            />
+
+            <ListField
+              name="redesSociais"
+              label="Redes sociais / links"
+              placeholder="Ex: instagram.com/perfil"
+              initialItems={cliente.briefing?.redesSociais ?? []}
+            />
+
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="observacoes">Observações</Label>
               <Textarea id="observacoes" name="observacoes" rows={3} defaultValue={cliente.briefing?.observacoes ?? ""} />

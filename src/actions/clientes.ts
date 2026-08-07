@@ -51,17 +51,44 @@ export async function updateDadosCliente(clienteId: string, formData: FormData) 
   revalidatePath("/");
 }
 
+function toStringList(formData: FormData, key: string): string[] {
+  return formData
+    .getAll(key)
+    .map((v) => String(v).trim())
+    .filter(Boolean);
+}
+
 export async function updateBriefing(clienteId: string, formData: FormData) {
   const nicho = String(formData.get("nicho") ?? "").trim();
-  const publicoAlvo = String(formData.get("publicoAlvo") ?? "").trim();
+  const publicoAlvo = toStringList(formData, "publicoAlvo");
+  const diferenciais = toStringList(formData, "diferenciais");
   const oferta = String(formData.get("oferta") ?? "").trim();
+  const concorrentes = toStringList(formData, "concorrentes");
+  const objecoes = toStringList(formData, "objecoes");
+  const objetivoPrincipal = String(formData.get("objetivoPrincipal") ?? "").trim();
+  const ticketMedio = toNumber(formData.get("ticketMedio"));
   const orcamentoMensal = toNumber(formData.get("orcamentoMensal"));
+  const redesSociais = toStringList(formData, "redesSociais");
   const observacoes = String(formData.get("observacoes") ?? "").trim();
+
+  const data = {
+    nicho,
+    publicoAlvo,
+    diferenciais,
+    oferta,
+    concorrentes,
+    objecoes,
+    objetivoPrincipal,
+    ticketMedio,
+    orcamentoMensal,
+    redesSociais,
+    observacoes,
+  };
 
   await prisma.briefing.upsert({
     where: { clienteId },
-    update: { nicho, publicoAlvo, oferta, orcamentoMensal, observacoes },
-    create: { clienteId, nicho, publicoAlvo, oferta, orcamentoMensal, observacoes },
+    update: data,
+    create: { clienteId, ...data },
   });
 
   revalidatePath(`/clientes/${clienteId}`);

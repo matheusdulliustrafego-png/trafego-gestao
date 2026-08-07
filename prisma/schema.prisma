@@ -44,15 +44,21 @@ model Cliente {
 }
 
 model Briefing {
-  id              String   @id @default(cuid())
-  clienteId       String   @unique
-  cliente         Cliente  @relation(fields: [clienteId], references: [id], onDelete: Cascade)
-  nicho           String   @default("")
-  publicoAlvo     String   @default("")
-  oferta          String   @default("")
-  orcamentoMensal Float    @default(0)
-  observacoes     String   @default("")
-  updatedAt       DateTime @updatedAt
+  id                String   @id @default(cuid())
+  clienteId         String   @unique
+  cliente           Cliente  @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+  nicho             String   @default("")
+  publicoAlvo       String[] @default([])
+  diferenciais      String[] @default([])
+  oferta            String   @default("")
+  concorrentes      String[] @default([])
+  objecoes          String[] @default([])
+  objetivoPrincipal String   @default("")
+  ticketMedio       Float    @default(0)
+  orcamentoMensal   Float    @default(0)
+  redesSociais      String[] @default([])
+  observacoes       String   @default("")
+  updatedAt         DateTime @updatedAt
 }
 
 model Pagamento {

@@ -5,6 +5,7 @@ import { ChevronDown } from "lucide-react";
 import { formatDate } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { Reveal } from "@/components/reveal";
+import { origemLeadLabel } from "@/lib/origem-lead";
 import { LeadStatusSelect } from "./lead-status-select";
 import { LeadDeleteButton } from "./lead-delete-button";
 
@@ -47,7 +48,7 @@ export function LeadsList({ leads }: { leads: Lead[] }) {
               <div className="pl-2">
                 <p className="font-sans text-sm font-medium text-white">{lead.nome}</p>
                 <p className="mt-0.5 font-sans text-xs text-white/45">
-                  {[lead.contato, lead.origem].filter(Boolean).join(" · ") || "—"}
+                  {[lead.contato, origemLeadLabel(lead.origem)].filter(Boolean).join(" · ") || "—"}
                 </p>
                 {lead.observacoes ? (
                   <p className="mt-1 font-sans text-xs text-white/40">{lead.observacoes}</p>

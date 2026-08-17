@@ -1,9 +1,10 @@
 import Link from "next/link";
-import { Plus, Users, Wallet, UserPlus, Target } from "lucide-react";
+import { Plus, Users, Wallet, UserPlus, Target, ListChecks, Check } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { cn } from "@/lib/utils";
-import { formatCurrency, mesReferenciaAtual } from "@/lib/format";
+import { formatCurrency, formatDate, mesReferenciaAtual } from "@/lib/format";
 import { updateMeta } from "@/actions/meta";
+import { toggleTarefa } from "@/actions/tarefas";
 import { Reveal } from "@/components/reveal";
 import { AnimatedCounter } from "@/components/animated-counter";
 import { Input } from "@/components/ui/input";
@@ -45,7 +46,7 @@ const ACCENTS = [
 export default async function Home() {
   const mesAtual = mesReferenciaAtual();
 
-  const [clientes, leadsEmAberto, meta] = await Promise.all([
+  const [clientes, leadsEmAberto, meta, tarefasPendentes] = await Promise.all([
     prisma.cliente.findMany({
       orderBy: { nome: "asc" },
       include: {
@@ -54,6 +55,12 @@ export default async function Home() {
     }),
     prisma.lead.count({ where: { status: { notIn: ["FECHADO", "PERDIDO"] } } }),
     prisma.meta.findFirst(),
+    prisma.tarefa.findMany({
+      where: { concluida: false },
+      include: { cliente: { select: { id: true, nome: true } } },
+      orderBy: [{ dataLimite: "asc" }, { createdAt: "desc" }],
+      take: 8,
+    }),
   ]);
 
   const clientesAtivos = clientes.filter((c) => c.status === "ATIVO").length;
@@ -153,6 +160,57 @@ export default async function Home() {
           ) : null}
         </div>
       </Reveal>
+
+      {tarefasPendentes.length > 0 ? (
+        <Reveal delay={0.22}>
+          <div className="rounded-2xl border border-white/[0.08] bg-gradient-to-b from-white/[0.04] to-transparent p-6">
+            <div className="flex items-center gap-3">
+              <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-brand-cyan to-brand-blue text-white shadow-md">
+                <ListChecks className="size-4.5" strokeWidth={2} />
+              </span>
+              <h2 className="font-heading text-lg font-semibold text-white">
+                Tarefas pendentes ({tarefasPendentes.length})
+              </h2>
+            </div>
+            <div className="mt-4 flex flex-col gap-2">
+              {tarefasPendentes.map((tarefa) => (
+                <div
+                  key={tarefa.id}
+                  className="flex items-center justify-between gap-3 rounded-xl bg-white/[0.03] px-3 py-2.5"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <form action={toggleTarefa.bind(null, tarefa.id, true)}>
+                      <button
+                        type="submit"
+                        aria-label="Marcar como concluída"
+                        className="flex size-6 shrink-0 items-center justify-center rounded-full border border-white/20 text-transparent transition-colors hover:border-brand-success hover:text-brand-success"
+                      >
+                        <Check className="size-3.5" strokeWidth={2.5} />
+                      </button>
+                    </form>
+                    <div>
+                      <p className="font-sans text-sm font-medium text-white">{tarefa.titulo}</p>
+                      <p className="font-sans text-xs text-white/40">
+                        {[tarefa.cliente?.nome, tarefa.dataLimite ? formatDate(tarefa.dataLimite) : null]
+                          .filter(Boolean)
+                          .join(" · ")}
+                      </p>
+                    </div>
+                  </div>
+                  {tarefa.cliente ? (
+                    <Link
+                      href={`/clientes/${tarefa.cliente.id}`}
+                      className="shrink-0 font-sans text-xs text-white/40 hover:text-white"
+                    >
+                      Ver cliente
+                    </Link>
+                  ) : null}
+                </div>
+              ))}
+            </div>
+          </div>
+        </Reveal>
+      ) : null}
 
       {clientes.length === 0 ? (
         <p className="font-sans text-sm text-white/40">Nenhum cliente cadastrado ainda.</p>

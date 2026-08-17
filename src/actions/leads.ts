@@ -6,11 +6,17 @@ import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { LEAD_ENVIADO_COOKIE } from "@/lib/auth";
 import { enviarNotificacaoNovoLead } from "@/lib/email";
+import { ORIGENS_LEAD, type OrigemLead } from "@/lib/origem-lead";
+
+function toOrigem(value: FormDataEntryValue | null): OrigemLead {
+  const raw = String(value ?? "").trim().toUpperCase();
+  return (ORIGENS_LEAD as readonly string[]).includes(raw) ? (raw as OrigemLead) : "OUTRO";
+}
 
 export async function createLead(formData: FormData) {
   const nome = String(formData.get("nome") ?? "").trim();
   const contato = String(formData.get("contato") ?? "").trim();
-  const origem = String(formData.get("origem") ?? "").trim();
+  const origem = toOrigem(formData.get("origem"));
   const observacoes = String(formData.get("observacoes") ?? "").trim();
   const publico = formData.get("publico") === "1";
 

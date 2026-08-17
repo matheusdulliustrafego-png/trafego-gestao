@@ -11,6 +11,7 @@ import { Reveal } from "@/components/reveal";
 import { CapturaPublica } from "@/components/leads/captura-publica";
 import { LeadsOverview } from "@/components/leads/leads-overview";
 import { LeadsList } from "@/components/leads/leads-list";
+import { ORIGEM_LEAD_LABELS } from "@/lib/origem-lead";
 
 export const dynamic = "force-dynamic";
 
@@ -61,7 +62,18 @@ export default async function LeadsPage() {
             </div>
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="origem">Origem</Label>
-              <Input id="origem" name="origem" className="h-11" placeholder="Ex: site, indicação, Instagram" />
+              <select
+                id="origem"
+                name="origem"
+                defaultValue="OUTRO"
+                className="h-11 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm text-white outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 dark:bg-input/30"
+              >
+                {Object.entries(ORIGEM_LEAD_LABELS).map(([value, label]) => (
+                  <option key={value} value={value} className="bg-brand-charcoal text-white">
+                    {label}
+                  </option>
+                ))}
+              </select>
             </div>
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="observacoes">Observações</Label>

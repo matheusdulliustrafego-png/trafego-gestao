@@ -68,7 +68,7 @@ export function CapturaPublica({ jaEnviado }: { jaEnviado: boolean }) {
         <Reveal delay={0.08}>
           <form action={createLead} className="glass-panel mt-8 flex flex-col gap-4 rounded-3xl p-7 shadow-2xl">
             <input type="hidden" name="publico" value="1" />
-            <input type="hidden" name="origem" value="Site (formulário)" />
+            <input type="hidden" name="origem" value="SITE" />
 
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="nome">Nome *</Label>

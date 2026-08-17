@@ -17,12 +17,15 @@
   --color-warning: #eab308;
   --color-danger: #ef4444;
 
-  /* Acentos vivos — só nesta ferramenta interna */
-  --color-blue: #3b82f6;
-  --color-purple: #a855f7;
-  --color-pink: #ec4899;
-  --color-orange: #f97316;
-  --color-cyan: #22d3ee;
+  /* Acentos suaves — preto, branco, azul e cinza. Os quatro tokens abaixo
+     (herdados de um sistema anterior com mais cores) hoje resolvem só para
+     azul e cinza, pra manter os gradientes de ícone existentes sem precisar
+     trocar cada uso individualmente pelo app. */
+  --color-blue: #5b84b3;
+  --color-purple: #8a8f98;
+  --color-pink: #6b7076;
+  --color-orange: #a8adb5;
+  --color-cyan: #7a9cc0;
 
   --background: var(--color-black);
   --foreground: var(--color-white);

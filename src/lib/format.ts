@@ -59,6 +59,12 @@ export function parseDateOnly(value: string): Date {
   return new Date(Date.UTC(year, (month ?? 1) - 1, day ?? 1));
 }
 
+// Inverso de parseDateOnly: formata uma data "somente dia" (guardada em UTC) para
+// o formato "AAAA-MM-DD" que um <input type="date"> espera como defaultValue.
+export function toDateInputValue(date: Date): string {
+  return `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, "0")}-${String(date.getUTCDate()).padStart(2, "0")}`;
+}
+
 export function monthKey(date: Date): string {
   return `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, "0")}`;
 }

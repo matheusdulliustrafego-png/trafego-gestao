@@ -1,11 +1,11 @@
 import { notFound } from "next/navigation";
-import type { LucideIcon } from "lucide-react";
-import { Contact, FileText, Wallet, KeyRound, Trash2 } from "lucide-react";
+import { Contact, FileText, Wallet, KeyRound, Trash2, ListChecks } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { cn } from "@/lib/utils";
 import { formatCurrency, formatMesReferencia, mesReferenciaAtual } from "@/lib/format";
 import { addPagamento, marcarPagamento, updateBriefing, updateDadosCliente } from "@/actions/clientes";
 import { addAcesso, deleteAcesso } from "@/actions/acessos";
+import { createTarefa } from "@/actions/tarefas";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -13,6 +13,8 @@ import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/reveal";
 import { SenhaReveal } from "@/components/senha-reveal";
 import { ListField } from "@/components/list-field";
+import { Section } from "@/components/section";
+import { TarefasList } from "@/components/tarefas/tarefas-list";
 
 export const dynamic = "force-dynamic";
 
@@ -36,35 +38,6 @@ function proximoVencimentoISO(diaVencimento: number | null): string {
   return `${ano}-${mes}-${String(dia).padStart(2, "0")}`;
 }
 
-function Section({
-  title,
-  description,
-  icon: Icon,
-  accent,
-  children,
-}: {
-  title: string;
-  description?: string;
-  icon: LucideIcon;
-  accent: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <section className="rounded-2xl border border-white/[0.08] bg-gradient-to-b from-white/[0.04] to-transparent p-6">
-      <div className="flex items-center gap-3">
-        <span className={cn("flex size-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br text-white shadow-md", accent)}>
-          <Icon className="size-4.5" strokeWidth={2} />
-        </span>
-        <div>
-          <h2 className="font-heading text-lg font-semibold text-white">{title}</h2>
-          {description ? <p className="font-sans text-sm text-white/50">{description}</p> : null}
-        </div>
-      </div>
-      <div className="mt-5">{children}</div>
-    </section>
-  );
-}
-
 export default async function ClienteDetailPage({
   params,
 }: {
@@ -78,6 +51,7 @@ export default async function ClienteDetailPage({
       briefing: true,
       pagamentos: { orderBy: { createdAt: "desc" } },
       acessos: { orderBy: { createdAt: "desc" } },
+      tarefas: { orderBy: [{ concluida: "asc" }, { dataLimite: "asc" }, { createdAt: "desc" }] },
     },
   });
 
@@ -87,6 +61,7 @@ export default async function ClienteDetailPage({
   const updateDadosClienteWithId = updateDadosCliente.bind(null, cliente.id);
   const addPagamentoWithId = addPagamento.bind(null, cliente.id);
   const addAcessoWithId = addAcesso.bind(null, cliente.id);
+  const createTarefaWithId = createTarefa.bind(null, cliente.id);
 
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-6 py-12">
@@ -327,6 +302,27 @@ export default async function ClienteDetailPage({
           <p className="mt-2 font-sans text-xs text-white/35">
             A data de vencimento aparece automaticamente na Agenda.
           </p>
+        </Section>
+      </Reveal>
+
+      {/* Tarefas */}
+      <Reveal delay={0.18}>
+        <Section title="Tarefas" description="Pendências e lembretes deste cliente." icon={ListChecks} accent="from-brand-cyan to-brand-blue">
+          <TarefasList tarefas={cliente.tarefas} />
+
+          <form action={createTarefaWithId} className="mt-5 flex flex-wrap items-end gap-3 border-t border-white/[0.06] pt-5">
+            <div className="flex flex-1 min-w-40 flex-col gap-1.5">
+              <Label htmlFor="titulo">Título *</Label>
+              <Input id="titulo" name="titulo" required className="h-10" placeholder="Ex: Enviar relatório mensal" />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="dataLimite">Data limite</Label>
+              <Input id="dataLimite" name="dataLimite" type="date" className="h-10" />
+            </div>
+            <Button type="submit" variant="secondary" className="h-10 rounded-full">
+              Adicionar tarefa
+            </Button>
+          </form>
         </Section>
       </Reveal>
 

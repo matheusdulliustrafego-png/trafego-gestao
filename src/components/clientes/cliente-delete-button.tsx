@@ -69,7 +69,7 @@ export function ClienteDeleteButton({ clienteId }: { clienteId: string }) {
       type="button"
       onClick={askConfirm}
       aria-label="Excluir cliente"
-      className="flex size-7 items-center justify-center rounded-full bg-brand-black/70 text-white/40 opacity-0 backdrop-blur-sm transition-all hover:bg-destructive/20 hover:text-destructive group-hover:opacity-100"
+      className="flex size-7 items-center justify-center rounded-full bg-brand-black/70 text-white/50 backdrop-blur-sm transition-colors hover:bg-destructive/20 hover:text-destructive"
     >
       <Trash2 className="size-3.5" />
     </button>

@@ -222,7 +222,7 @@ export default async function Home() {
             const accent = ACCENTS[i % ACCENTS.length];
 
             return (
-              <Reveal key={cliente.id} delay={0.1 + i * 0.04} className="group relative">
+              <Reveal key={cliente.id} delay={0.1 + i * 0.04} className="relative">
                 <div className="absolute right-3 top-3 z-10">
                   <ClienteDeleteButton clienteId={cliente.id} />
                 </div>

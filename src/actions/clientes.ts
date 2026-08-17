@@ -32,6 +32,13 @@ export async function createCliente(formData: FormData) {
   redirect(`/clientes/${cliente.id}`);
 }
 
+export async function deleteCliente(clienteId: string) {
+  await prisma.cliente.delete({ where: { id: clienteId } });
+  revalidatePath("/");
+  revalidatePath("/agenda");
+  revalidatePath("/financeiro");
+}
+
 export async function updateDadosCliente(clienteId: string, formData: FormData) {
   const nome = String(formData.get("nome") ?? "").trim();
   if (!nome) throw new Error("Nome é obrigatório.");

@@ -9,6 +9,7 @@ import { Reveal } from "@/components/reveal";
 import { AnimatedCounter } from "@/components/animated-counter";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { ClienteDeleteButton } from "@/components/clientes/cliente-delete-button";
 
 export const dynamic = "force-dynamic";
 
@@ -221,10 +222,13 @@ export default async function Home() {
             const accent = ACCENTS[i % ACCENTS.length];
 
             return (
-              <Reveal key={cliente.id} delay={0.1 + i * 0.04}>
+              <Reveal key={cliente.id} delay={0.1 + i * 0.04} className="group relative">
+                <div className="absolute right-3 top-3 z-10">
+                  <ClienteDeleteButton clienteId={cliente.id} />
+                </div>
                 <Link
                   href={`/clientes/${cliente.id}`}
-                  className="glow-card group relative flex h-full flex-col gap-4 overflow-hidden rounded-2xl border border-white/[0.08] bg-gradient-to-b from-white/[0.04] to-transparent p-5 transition-all duration-300 hover:-translate-y-1"
+                  className="glow-card relative flex h-full flex-col gap-4 overflow-hidden rounded-2xl border border-white/[0.08] bg-gradient-to-b from-white/[0.04] to-transparent p-5 transition-all duration-300 hover:-translate-y-1"
                 >
                   <span className={cn("absolute inset-x-0 top-0 h-1 bg-gradient-to-r", accent)} />
 
